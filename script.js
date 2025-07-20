@@ -16,13 +16,23 @@ const characterCheckboxes = [chkLowercase, chkUppercase, chkNumbers, chkSymbols]
 
 // --- Configuración Global de la Simulación ---
 
-// Definición de los tamaños de los alfabetos individuales
-const ALPHABET_SIZES = {
-    lowercase: 26, // a-z
-    uppercase: 26, // A-Z
-    numbers: 10,   // 0-9
-    symbols: 32    // Caracteres especiales comunes
+// Definición de los tamaños y JUEGOS de los alfabetos individuales
+const ALPHABETS = {
+    lowercase: 'abcdefghijklmnopqrstuvwxyz',
+    uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    numbers: '0123456789',
+    // Símbolos comunes (puedes expandir o reducir según tu criterio)
+    symbols: '!@#$%^&*()-_+=[]{}|;:,.<>?/~`"\'\\'
 };
+
+// Obtenemos los tamaños directamente de la longitud de las cadenas de caracteres
+const ALPHABET_SIZES = {
+    lowercase: ALPHABETS.lowercase.length,
+    uppercase: ALPHABETS.uppercase.length,
+    numbers: ALPHABETS.numbers.length,
+    symbols: ALPHABETS.symbols.length
+};
+
 
 // Velocidades de intento por segundo para cada tipo de atacante
 const attemptsPerSecondHuman = 0.5; // 1 intento cada 2 segundos
@@ -41,7 +51,21 @@ let previousPasswordLength = 0; // Para detectar cambios en la longitud de la co
 // --- Funciones de Lógica de Negocio ---
 
 /**
+ * Construye la cadena de caracteres permitidos basada en los checkboxes seleccionados.
+ * @returns {string} Una cadena que contiene todos los caracteres permitidos.
+ */
+function getPermittedCharacterSet() {
+    let permittedChars = '';
+    if (chkLowercase.checked) permittedChars += ALPHABETS.lowercase;
+    if (chkUppercase.checked) permittedChars += ALPHABETS.uppercase;
+    if (chkNumbers.checked) permittedChars += ALPHABETS.numbers;
+    if (chkSymbols.checked) permittedChars += ALPHABETS.symbols;
+    return permittedChars;
+}
+
+/**
  * Calcula el tamaño del alfabeto combinado basado en los checkboxes seleccionados.
+ * Es crucial para la fórmula de combinaciones.
  * @returns {number} El tamaño total del alfabeto.
  */
 function getCharacterSetSize() {
@@ -219,23 +243,46 @@ function createOrUpdateChart(canvasElement, chartInstance, historicalData, chart
  * Calcula y actualiza ambos gráficos y los textos de tiempo.
  */
 function updateDecryptionAnalysis() {
-    const password = passwordInput.value;
+    // Obtener la cadena de caracteres permitidos basada en la selección actual
+    const permittedCharacterSet = getPermittedCharacterSet();
+
+    let password = passwordInput.value;
+    let newPassword = '';
+
+    // --- NUEVA LÓGICA DE VALIDACIÓN DE CARACTERES ---
+    // Recorre la contraseña ingresada, caracter por caracter
+    for (let i = 0; i < password.length; i++) {
+        const char = password[i];
+        // Si el caracter está en el conjunto de caracteres permitidos, lo añade
+        if (permittedCharacterSet.includes(char)) {
+            newPassword += char;
+        }
+    }
+    // Actualiza el campo de entrada con la contraseña "limpia"
+    passwordInput.value = newPassword;
+    password = newPassword; // Asegúrate de que la variable 'password' refleje el valor limpio
+    // --- FIN NUEVA LÓGICA ---
+
     const currentPasswordLength = password.length;
     const currentCharacterSetSize = getCharacterSetSize();
 
-    // --- NUEVA LÓGICA PARA HABILITAR/DESHABILITAR CHECKBOXES ---
+    // Lógica para habilitar/deshabilitar checkboxes
     const disableCheckboxes = currentPasswordLength > 0;
     characterCheckboxes.forEach(checkbox => {
         checkbox.disabled = disableCheckboxes;
     });
-    // --- FIN NUEVA LÓGICA ---
 
     // Determina si la longitud de la contraseña ha cambiado o si el set de caracteres ha cambiado
     const lengthChanged = currentPasswordLength !== previousPasswordLength;
-    const charSetChanged = historicalDataHuman.length > 0 && historicalDataHuman[historicalDataHuman.length - 1].charSetSize !== currentCharacterSetSize;
+    // La condición para charSetChanged debe verificar si el último punto en el historial
+    // tiene un tamaño de alfabeto diferente al actual.
+    // Solo se chequea si hay historial y si los checkboxes están habilitados (cuando currentPasswordLength es 0)
+    // o si el cambio de set de caracteres ocurre antes de escribir.
+    const charSetChanged = !disableCheckboxes && historicalDataHuman.length > 0 && historicalDataHuman[historicalDataHuman.length - 1].charSetSize !== currentCharacterSetSize;
+
 
     if (lengthChanged || charSetChanged) {
-        // Si la longitud disminuye o el set de caracteres cambia, reinicia ambos historiales
+        // Si la longitud disminuye o el set de caracteres cambia (y no hay password), reinicia ambos historiales
         if (currentPasswordLength < previousPasswordLength || charSetChanged) {
             historicalDataHuman = [];
             historicalDataComputer = [];
@@ -283,7 +330,7 @@ function updateDecryptionAnalysis() {
         historicalDataComputer,
         `Tiempo de Desencriptación (Computadora)`,
         `Tiempo Estimado (segundos)`,
-        'linear' // Ambos ejes Y en escala lineal
+        'linear'
     );
 }
 
@@ -293,20 +340,20 @@ function updateDecryptionAnalysis() {
 passwordInput.addEventListener('input', updateDecryptionAnalysis);
 
 // Escucha cada cambio en los checkboxes de tipo de carácter.
-// Estos listeners ahora solo reinician el historial si se cambia la selección,
-// la habilitación/deshabilitación se maneja en updateDecryptionAnalysis.
 characterCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', () => {
         // Al cambiar las opciones de caracteres, reiniciamos el historial para ambos gráficos
+        // y también volvemos a validar la contraseña actual con las nuevas reglas.
         historicalDataHuman = [];
         historicalDataComputer = [];
         previousPasswordLength = 0; // Reinicia la longitud previa para una nueva secuencia.
-        updateDecryptionAnalysis(); // Dispara la actualización.
+        updateDecryptionAnalysis(); // Dispara la actualización y la validación.
     });
 });
 
 // --- Inicialización del Proyecto ---
 
 // Llama a la función de análisis al cargar la página por primera vez.
-// Esto asegura que los checkboxes estén habilitados al inicio si el campo está vacío.
+// Esto asegura que los checkboxes estén habilitados al inicio si el campo está vacío
+// y que cualquier contraseña preexistente se valide.
 updateDecryptionAnalysis();
