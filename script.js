@@ -1,8 +1,9 @@
 // script.js
 
+// --- Referencias a elementos del DOM ---
 const passwordInput = document.getElementById('passwordInput');
-const decryptionTimeSpan = document.getElementById('decryptionTime');
-const timeChartCanvas = document.getElementById('timeChart');
+const decryptionTimeHumanSpan = document.getElementById('decryptionTimeHuman');
+const decryptionTimeComputerSpan = document.getElementById('decryptionTimeComputer');
 
 // Referencias a los checkboxes de tipo de carácter
 const chkLowercase = document.getElementById('chkLowercase');
@@ -10,21 +11,29 @@ const chkUppercase = document.getElementById('chkUppercase');
 const chkNumbers = document.getElementById('chkNumbers');
 const chkSymbols = document.getElementById('chkSymbols');
 
-// --- Configuración Global ---
+// --- Configuración Global de la Simulación ---
 
 // Definición de los tamaños de los alfabetos individuales
 const ALPHABET_SIZES = {
     lowercase: 26, // a-z
     uppercase: 26, // A-Z
     numbers: 10,   // 0-9
-    symbols: 32    // Caracteres especiales comunes (puedes ajustar esta cantidad si lo deseas)
+    symbols: 32    // Caracteres especiales comunes
 };
 
-// Velocidad de intentos por segundo que asumimos para el atacante.
-// Un billón (10^9) de intentos por segundo, común para GPUs modernas o botnets.
-const attemptsPerSecond = 1_000_000_000;
+// Velocidades de intento por segundo para cada tipo de atacante
+const attemptsPerSecondHuman = 0.5; // 1 intento cada 2 segundos
+const attemptsPerSecondComputer = 1_000_000_000; // 1 billón (10^9) de intentos por segundo
 
-let chart; // Variable global para almacenar la instancia del gráfico de Chart.js
+// --- Variables para los Gráficos y el Historial ---
+let humanChart;    // Instancia del gráfico para ataque humano
+let computerChart; // Instancia del gráfico para ataque de computadora
+
+// Almacena los puntos históricos para cada gráfico
+let historicalDataHuman = [];
+let historicalDataComputer = [];
+
+let previousPasswordLength = 0; // Para detectar cambios en la longitud de la contraseña
 
 // --- Funciones de Lógica de Negocio ---
 
@@ -38,9 +47,6 @@ function getCharacterSetSize() {
     if (chkUppercase.checked) size += ALPHABET_SIZES.uppercase;
     if (chkNumbers.checked) size += ALPHABET_SIZES.numbers;
     if (chkSymbols.checked) size += ALPHABET_SIZES.symbols;
-
-    // Asegura que el tamaño del alfabeto sea al menos 1 para evitar Math.pow(0, X)
-    // Esto es importante si el usuario desmarca todas las opciones.
     return Math.max(size, 1);
 }
 
@@ -48,25 +54,20 @@ function getCharacterSetSize() {
  * Calcula el tiempo estimado de desencriptación por fuerza bruta.
  * @param {number} passwordLength - La longitud de la contraseña.
  * @param {number} currentCharacterSetSize - El tamaño actual del alfabeto combinado.
+ * @param {number} attemptsPerSec - La velocidad de intentos para este cálculo (humano o máquina).
  * @returns {number} Tiempo en segundos.
  */
-function calculateDecryptionTime(passwordLength, currentCharacterSetSize) {
+function calculateDecryptionTime(passwordLength, currentCharacterSetSize, attemptsPerSec) {
     if (passwordLength === 0) {
-        return 0; // Si no hay contraseña, el tiempo es 0.
+        return 0;
     }
-
-    // Calcula el número total de combinaciones posibles.
-    // Fórmula: (Tamaño del Alfabeto) ^ (Longitud de la Contraseña)
     const numberOfCombinations = Math.pow(currentCharacterSetSize, passwordLength);
-
-    // Calcula el tiempo dividiendo las combinaciones por la velocidad de intento.
-    const timeInSeconds = numberOfCombinations / attemptsPerSecond;
-
+    const timeInSeconds = numberOfCombinations / attemptsPerSec;
     return timeInSeconds;
 }
 
 /**
- * Formatea un tiempo dado en segundos a una cadena legible (ms, s, min, h, días, años, etc.).
+ * Formatea un tiempo dado en segundos a una cadena legible.
  * @param {number} seconds - El tiempo en segundos.
  * @returns {string} El tiempo formateado.
  */
@@ -77,57 +78,59 @@ function formatTime(seconds) {
     if (seconds < 3600) return `${(seconds / 60).toFixed(2)} minutos`;
     if (seconds < 86400) return `${(seconds / 3600).toFixed(2)} horas`;
     if (seconds < 31536000) return `${(seconds / 86400).toFixed(2)} días`;
-    if (seconds < 31536000000) return `${(seconds / 31536000).toFixed(2)} años`;
+    if (seconds < 31536000000) return `${(seconds / 31536000).toPrecision(3)} años`;
 
-    // Para tiempos extremadamente largos (billones de años o más), usar notación científica o simplificada
-    const trillionYears = 31536000000000; // 1 billón de años en segundos
+    const trillionYears = 31536000000000;
     if (seconds < trillionYears) {
-        return `${(seconds / 31536000).toPrecision(3)} años`; // Muestra con 3 cifras significativas
+        return `${(seconds / 31536000).toPrecision(3)} años`;
     }
     return `${seconds.toExponential(2)} segundos (¡incalculable!)`;
 }
 
-// --- Funciones de Renderizado del Gráfico ---
+// --- Funciones de Renderizado de Gráficos ---
 
 /**
- * Actualiza o inicializa el gráfico de tiempo de desencriptación.
- * @param {number} currentPasswordLength - La longitud actual de la contraseña ingresada.
- * @param {number} charSetSizeForChart - El tamaño del alfabeto usado para los cálculos del gráfico.
+ * Inicializa o actualiza un gráfico específico.
+ * @param {HTMLCanvasElement} canvasElement - El elemento canvas para el gráfico.
+ * @param {object} chartInstance - La instancia actual del gráfico (null si no existe).
+ * @param {Array<object>} historicalData - Los datos históricos para este gráfico.
+ * @param {string} chartTitle - Título del gráfico.
+ * @param {string} yAxisLabel - Etiqueta para el eje Y.
+ * @param {string} yAxisType - Tipo de escala para el eje Y ('linear' o 'logarithmic').
+ * @returns {Chart} La instancia actualizada o nueva del gráfico.
  */
-function updateChart(currentPasswordLength, charSetSizeForChart) {
-    const labels = [];
-    const data = [];
+function createOrUpdateChart(canvasElement, chartInstance, historicalData, chartTitle, yAxisLabel, yAxisType) {
+    const labels = historicalData.map(d => `${d.length} car.`);
+    const data = historicalData.map(d => d.time);
 
-    // Determina la longitud máxima de contraseña a mostrar en el gráfico.
-    // Esto asegura que el gráfico siempre tenga un rango visible (min 15 caracteres),
-    // y se extienda un poco más allá de la longitud actual para mostrar la tendencia.
-    const maxLen = Math.max(currentPasswordLength + 5, 15);
-
-    // Genera los puntos de datos para el gráfico usando el tamaño de alfabeto actual.
-    for (let i = 1; i <= maxLen; i++) {
-        labels.push(`${i} car.`); // Etiqueta para el eje X (ej: "5 car.")
-        data.push(calculateDecryptionTime(i, charSetSizeForChart)); // Tiempo de desencriptación
-    }
-
-    // Si el gráfico ya ha sido inicializado, solo actualiza sus datos y redibuja.
-    if (chart) {
-        chart.data.labels = labels;
-        chart.data.datasets[0].data = data;
-        chart.options.scales.y.title.text = `Tiempo Estimado de Desencriptación (alfabeto de ${charSetSizeForChart} car.)`;
-        chart.update(); // Manda a Chart.js a redibujar el gráfico con los nuevos datos.
+    if (chartInstance) {
+        chartInstance.data.labels = labels;
+        chartInstance.data.datasets[0].data = data;
+        chartInstance.options.scales.y.title.text = yAxisLabel;
+        // Ajustar el límite máximo del eje Y dinámicamente para escala lineal
+        if (yAxisType === 'linear' && data.length > 0) {
+            // Establece un máximo que sea un poco más grande que el valor más alto actual.
+            // Esto ayudará a que la curva se vea, pero se disparará rápidamente.
+            chartInstance.options.scales.y.max = Math.max(...data) * 1.1;
+            // Si el valor máximo es 0 (contraseña vacía), asegura que el max sea razonable para empezar.
+            if (chartInstance.options.scales.y.max === 0) chartInstance.options.scales.y.max = 1;
+        } else if (yAxisType === 'logarithmic') {
+            // Para logarítmica, mantenemos un suggestedMax alto.
+            chartInstance.options.scales.y.suggestedMax = 1e15;
+        }
+        chartInstance.update();
     } else {
-        // Si es la primera vez, inicializa el gráfico.
-        chart = new Chart(timeChartCanvas, {
-            type: 'line', // Gráfico de línea
+        chartInstance = new Chart(canvasElement, {
+            type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
                     label: 'Tiempo de Desencriptación',
                     data: data,
-                    borderColor: 'rgb(52, 152, 219)', // Color de la línea (azul vibrante)
-                    backgroundColor: 'rgba(52, 152, 219, 0.2)', // Color del área bajo la línea
-                    tension: 0.3, // Curvatura de la línea
-                    fill: false, // No rellenar el área bajo la línea
+                    borderColor: 'rgb(52, 152, 219)',
+                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                    tension: 0.3,
+                    fill: false,
                     pointBackgroundColor: 'rgb(52, 152, 219)',
                     pointBorderColor: '#fff',
                     pointHoverBackgroundColor: '#fff',
@@ -136,26 +139,21 @@ function updateChart(currentPasswordLength, charSetSizeForChart) {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // Permite que el gráfico se adapte a su contenedor.
+                maintainAspectRatio: false,
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Impacto de la Longitud y Complejidad en el Tiempo de Desencriptación',
-                        font: {
-                            size: 16
-                        },
+                        text: chartTitle,
+                        font: { size: 16 },
                         color: '#333'
                     },
                     tooltip: {
                         callbacks: {
-                            // Personaliza la información que aparece al pasar el ratón por los puntos.
                             label: function(context) {
                                 let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
+                                if (label) { label += ': '; }
                                 if (context.parsed.y !== null) {
-                                    label += formatTime(context.parsed.y); // Usa la función formatTime
+                                    label += formatTime(context.parsed.y);
                                 }
                                 return label;
                             },
@@ -170,80 +168,142 @@ function updateChart(currentPasswordLength, charSetSizeForChart) {
                         title: {
                             display: true,
                             text: 'Longitud de la Contraseña',
-                            font: {
-                                size: 14
-                            },
-                            color: '#555'
-                        },
-                        grid: {
-                            display: false // Oculta las líneas de la cuadrícula en el eje X
-                        }
-                    },
-                    y: {
-                        type: 'logarithmic', // ¡ESENCIAL! Usa escala logarítmica para ver el crecimiento exponencial.
-                        title: {
-                            display: true,
-                            // Este texto será actualizado dinámicamente
-                            text: `Tiempo Estimado de Desencriptación (asumiendo ${attemptsPerSecond.toExponential(0)} intentos/segundo)`,
-                            font: {
-                                size: 14
-                            },
+                            font: { size: 14 },
                             color: '#555'
                         },
                         ticks: {
-                            // Personaliza los ticks del eje Y para que sean más legibles en escala logarítmica.
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 0
+                        },
+                        grid: { display: false }
+                    },
+                    y: {
+                        type: yAxisType, // Dinámico: 'linear' o 'logarithmic'
+                        title: {
+                            display: true,
+                            text: yAxisLabel,
+                            font: { size: 14 },
+                            color: '#555'
+                        },
+                        ticks: {
                             callback: function(value, index, values) {
-                                if (value >= 1e12) return (value / 1e12).toFixed(0) + ' billones de seg.';
-                                if (value >= 1e9) return (value / 1e9).toFixed(0) + ' mil millones de seg.';
-                                if (value >= 1e6) return (value / 1e6).toFixed(0) + ' M seg.';
-                                if (value >= 1e3) return (value / 1e3).toFixed(0) + ' K seg.';
-                                if (value < 1 && value !== 0) return (value * 1000).toFixed(0) + ' ms';
-                                if (value === 0) return '0'; // Manejar el caso de 0 segundos
-                                return value.toFixed(0) + ' seg.';
+                                // Para escala lineal, solo usa formatTime.
+                                // Para logarítmica, usa la lógica específica de potencias de 10.
+                                if (yAxisType === 'logarithmic') {
+                                    if (value === 0) return '0';
+                                    if (value === 1) return '1 seg.';
+                                    if (value === 0.001) return '1 ms';
+                                    if (value === 0.01) return '10 ms';
+                                    if (value === 0.1) return '100 ms';
+                                    if (Math.log10(value) % 1 === 0) {
+                                        return value.toLocaleString() + ' seg.';
+                                    }
+                                }
+                                return formatTime(value);
                             },
                             color: '#666'
                         },
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)' // Líneas de cuadrícula sutiles
-                        }
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        min: (yAxisType === 'linear' ? 0 : 0.001), // Mínimo diferente para lineal/logarítmica
+                        // suggestedMax se maneja en la lógica de actualización para lineal
+                        // y se mantiene en la creación para logarítmica.
+                        suggestedMax: (yAxisType === 'logarithmic' ? 1e15 : undefined)
                     }
                 }
             }
         });
     }
+    return chartInstance;
 }
 
-// --- Función de Actualización Central ---
+// --- Función Principal de Actualización ---
 
 /**
- * Función principal que se llama cada vez que hay un cambio en el input o en los checkboxes.
- * Recalcula y actualiza la interfaz y el gráfico.
+ * Función principal que se activa con cada cambio en el input de contraseña o en los checkboxes.
+ * Calcula y actualiza ambos gráficos y los textos de tiempo.
  */
 function updateDecryptionAnalysis() {
-    const passwordLength = passwordInput.value.length;
+    const password = passwordInput.value;
+    const currentPasswordLength = password.length;
     const currentCharacterSetSize = getCharacterSetSize();
 
-    // Recalcula el tiempo con el nuevo tamaño del alfabeto
-    const time = calculateDecryptionTime(passwordLength, currentCharacterSetSize);
-    decryptionTimeSpan.textContent = formatTime(time);
+    // Determina si la longitud de la contraseña ha cambiado o si el set de caracteres ha cambiado
+    const lengthChanged = currentPasswordLength !== previousPasswordLength;
+    // La condición para charSetChanged debe verificar si el último punto en el historial
+    // tiene un tamaño de alfabeto diferente al actual.
+    const charSetChanged = historicalDataHuman.length > 0 && historicalDataHuman[historicalDataHuman.length - 1].charSetSize !== currentCharacterSetSize;
 
-    // Actualiza el gráfico con la nueva longitud y el tamaño del alfabeto
-    updateChart(passwordLength, currentCharacterSetSize);
+    if (lengthChanged || charSetChanged) {
+        // Si la longitud disminuye o el set de caracteres cambia, reinicia ambos historiales
+        if (currentPasswordLength < previousPasswordLength || charSetChanged) {
+            historicalDataHuman = [];
+            historicalDataComputer = [];
+        }
+        
+        // Añade un nuevo punto al historial si la longitud actual es mayor que 0
+        if (currentPasswordLength > 0) {
+            const timeHuman = calculateDecryptionTime(currentPasswordLength, currentCharacterSetSize, attemptsPerSecondHuman);
+            const timeComputer = calculateDecryptionTime(currentPasswordLength, currentCharacterSetSize, attemptsPerSecondComputer);
+
+            historicalDataHuman.push({
+                length: currentPasswordLength,
+                time: timeHuman,
+                charSetSize: currentCharacterSetSize
+            });
+            historicalDataComputer.push({
+                length: currentPasswordLength,
+                time: timeComputer,
+                charSetSize: currentCharacterSetSize
+            });
+        }
+        previousPasswordLength = currentPasswordLength; // Actualiza la longitud previa
+    }
+
+    // Actualiza el texto de tiempo actual para ambos escenarios
+    const currentTimeHuman = calculateDecryptionTime(currentPasswordLength, currentCharacterSetSize, attemptsPerSecondHuman);
+    const currentTimeComputer = calculateDecryptionTime(currentPasswordLength, currentCharacterSetSize, attemptsPerSecondComputer);
+    
+    decryptionTimeHumanSpan.textContent = `${formatTime(currentTimeHuman)} (Humano)`;
+    decryptionTimeComputerSpan.textContent = `${formatTime(currentTimeComputer)} (Computadora)`;
+
+    // Renderiza (o actualiza) ambos gráficos
+    humanChart = createOrUpdateChart(
+        document.getElementById('humanTimeChart'),
+        humanChart,
+        historicalDataHuman,
+        `Tiempo de Desencriptación (${attemptsPerSecondHuman} int./seg.)`,
+        `Tiempo Estimado (segundos)`, // Eje Y para Humano
+        'linear' // Escala lineal para el humano
+    );
+
+    computerChart = createOrUpdateChart(
+        document.getElementById('computerTimeChart'),
+        computerChart,
+        historicalDataComputer,
+        `Tiempo de Desencriptación (Computadora)`, // Título más simple para computadora
+        `Tiempo Estimado (segundos)`, // Eje Y para Computadora
+        'linear' // ¡AHORA ES LINEAL PARA LA COMPUTADORA TAMBIÉN!
+    );
 }
 
-// --- Event Listeners ---
+// --- Event Listeners (Detectores de Eventos) ---
 
-// Escucha el evento 'input' en el campo de la contraseña.
+// Escucha cada cambio en el campo de entrada de la contraseña.
 passwordInput.addEventListener('input', updateDecryptionAnalysis);
 
-// Escucha el evento 'change' en cada checkbox para actualizar el cálculo cuando cambian.
-chkLowercase.addEventListener('change', updateDecryptionAnalysis);
-chkUppercase.addEventListener('change', updateDecryptionAnalysis);
-chkNumbers.addEventListener('change', updateDecryptionAnalysis);
-chkSymbols.addEventListener('change', updateDecryptionAnalysis);
+// Escucha cada cambio en los checkboxes de tipo de carácter.
+[chkLowercase, chkUppercase, chkNumbers, chkSymbols].forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+        // Al cambiar las opciones de caracteres, reiniciamos el historial para ambos gráficos
+        historicalDataHuman = [];
+        historicalDataComputer = [];
+        previousPasswordLength = 0; // Reinicia la longitud previa para una nueva secuencia.
+        updateDecryptionAnalysis(); // Dispara la actualización.
+    });
+});
 
-// --- Inicialización ---
+// --- Inicialización del Proyecto ---
 
-// Llama a la función principal de actualización al cargar la página
-// para mostrar el estado inicial del gráfico y los cálculos.
+// Llama a la función de análisis al cargar la página por primera vez.
 updateDecryptionAnalysis();

@@ -1,145 +1,53 @@
-/* Importa una fuente de Google Fonts para mejorar la tipografía */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
-
-:root {
-    /* Define variables CSS para colores, facilitando cambios futuros */
-    --primary-color: #2c3e50; /* Azul oscuro */
-    --secondary-color: #3498db; /* Azul vibrante */
-    --accent-color: #e74c3c; /* Rojo para alertas o énfasis */
-    --text-color: #333;
-    --background-color: #f8f8f8;
-    --card-background: #ffffff;
-    --border-color: #ddd;
-    --shadow-light: rgba(0, 0, 0, 0.1);
-}
-
 body {
-    font-family: 'Roboto', sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 20px;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Alinea al inicio para que el contenido fluya hacia abajo */
+    align-items: flex-start; /* Alinea los elementos en la parte superior */
     min-height: 100vh;
+    padding: 20px;
     box-sizing: border-box;
 }
 
 .container {
-    background-color: var(--card-background);
+    background-color: #fff;
     padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px var(--shadow-light);
-    max-width: 800px;
-    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     text-align: center;
-    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 1200px; /* Aumenta el ancho máximo para las dos gráficas */
+    box-sizing: border-box;
 }
 
 h1 {
-    color: var(--primary-color);
+    color: #2c3e50;
     margin-bottom: 20px;
-    font-weight: 700;
-    font-size: 2.2em;
 }
 
 p {
     margin-bottom: 25px;
-    font-size: 1.1em;
+    line-height: 1.6;
     color: #555;
 }
 
-#passwordInput {
-    width: calc(100% - 40px); /* Ajusta para padding */
-    padding: 15px 20px;
-    margin-bottom: 30px;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1.2em;
-    color: var(--primary-color);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    box-sizing: border-box; /* Incluye padding y borde en el ancho total */
+input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1.1em;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
 }
-
-#passwordInput:focus {
-    border-color: var(--secondary-color);
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
-}
-
-#result {
-    font-size: 1.3em;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-bottom: 35px;
-    padding: 15px;
-    background-color: #ecf0f1; /* Gris claro */
-    border-radius: 8px;
-    border: 1px solid #c8d2d6;
-}
-
-#decryptionTime {
-    color: var(--accent-color); /* Resalta el tiempo con un color de acento */
-    font-weight: 900;
-}
-
-.chart-container {
-    position: relative;
-    width: 100%;
-    height: 400px; /* Altura fija para el gráfico */
-    margin-top: 30px;
-    background-color: #fdfdfd;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-}
-
-/* Responsividad básica para pantallas más pequeñas */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
-
-    .container {
-        padding: 20px;
-    }
-
-    h1 {
-        font-size: 1.8em;
-    }
-
-    #passwordInput {
-        font-size: 1em;
-        padding: 12px 15px;
-    }
-
-    #result {
-        font-size: 1.1em;
-        padding: 12px;
-    }
-
-    .chart-container {
-        height: 300px; /* Ajusta la altura del gráfico en móviles */
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 1.5em;
-    }
-}
-
-/* ... (tu CSS existente) ... */
 
 .character-options {
     margin-bottom: 25px;
     display: flex;
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 15px; /* Espacio entre los checkboxes */
+    gap: 15px;
 }
 
 .character-options label {
@@ -152,20 +60,69 @@ p {
 }
 
 .character-options label:hover {
-    color: var(--primary-color);
+    color: #3498db; /* Usamos una variable si la definimos, sino un color directo */
 }
 
 .character-options input[type="checkbox"] {
     margin-right: 8px;
     width: 18px;
     height: 18px;
-    accent-color: var(--secondary-color); /* Cambia el color del check */
+    accent-color: #e74c3c; /* Color del check, puedes ajustar */
 }
 
-/* Media query para pantallas más pequeñas */
-@media (max-width: 768px) {
-    .character-options {
-        flex-direction: column; /* Apila los checkboxes en pantallas pequeñas */
-        align-items: flex-start;
+#result {
+    margin-top: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+#decryptionTimeHuman, #decryptionTimeComputer {
+    color: #e74c3c; /* Rojo para tiempos de humana, puedes elegir otro */
+}
+
+/* Estilos para las dos gráficas */
+.charts-wrapper {
+    display: flex;
+    flex-wrap: wrap; /* Permite que se apilen en pantallas pequeñas */
+    justify-content: space-around;
+    gap: 20px; /* Espacio entre las gráficas */
+}
+
+.chart-container {
+    width: 48%; /* Casi la mitad, dejando un pequeño espacio */
+    max-width: 550px; /* Controla el tamaño máximo de cada gráfica */
+    /* --- CAMBIOS AQUÍ --- */
+    height: 400px; /* Altura fija para el contenedor de la gráfica */
+    display: flex; /* Usar flexbox para centrar el canvas verticalmente */
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Alinea el título arriba y el canvas debajo */
+    /* --- FIN DE CAMBIOS --- */
+    margin: 0 auto; /* Centrar si hay solo una o en una línea */
+}
+
+.chart-container h2 {
+    color: #3498db;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+canvas {
+    max-width: 100%;
+    /* --- CAMBIOS AQUÍ --- */
+    flex-grow: 1; /* Permite que el canvas ocupe el espacio restante en el contenedor */
+    height: auto; /* Permite que Chart.js gestione la altura proporcionalmente al contenedor */
+    /* --- FIN DE CAMBIOS --- */
+}
+
+@media (max-width: 900px) {
+    .charts-wrapper {
+        flex-direction: column; /* Apila las gráficas en pantallas más pequeñas */
+        align-items: center;
+    }
+    .chart-container {
+        width: 90%; /* Ancho completo en pantallas pequeñas */
     }
 }

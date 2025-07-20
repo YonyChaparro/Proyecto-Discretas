@@ -21,11 +21,19 @@
         </div>
 
         <div id="result">
-            Tiempo estimado de desencriptación: <span id="decryptionTime">0 segundos</span>
+            Tiempo estimado de desencriptación: <span id="decryptionTimeHuman">0 segundos (Humano)</span> |
+            <span id="decryptionTimeComputer">0 segundos (Computadora)</span>
         </div>
 
-        <div class="chart-container">
-            <canvas id="timeChart"></canvas>
+        <div class="charts-wrapper">
+            <div class="chart-container">
+                <h2>Ataque Humano</h2>
+                <canvas id="humanTimeChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h2>Ataque de Computadora</h2>
+                <canvas id="computerTimeChart"></canvas>
+            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
