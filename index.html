@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Seguridad de Contraseñas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Seguridad de Contraseñas</h1>
+        <p>Ingresa tu contraseña para estimar el tiempo de desencriptación por fuerza bruta:</p>
+        <input type="text" id="passwordInput" placeholder="Escribe tu contraseña aquí">
+        <div id="result">
+            Tiempo estimado de desencriptación: <span id="decryptionTime">0 segundos</span>
+        </div>
+        <div class="chart-container">
+            <canvas id="timeChart"></canvas>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
