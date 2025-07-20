@@ -11,6 +11,9 @@ const chkUppercase = document.getElementById('chkUppercase');
 const chkNumbers = document.getElementById('chkNumbers');
 const chkSymbols = document.getElementById('chkSymbols');
 
+// Agrupar los checkboxes para facilitar su manejo
+const characterCheckboxes = [chkLowercase, chkUppercase, chkNumbers, chkSymbols];
+
 // --- Configuración Global de la Simulación ---
 
 // Definición de los tamaños de los alfabetos individuales
@@ -109,13 +112,9 @@ function createOrUpdateChart(canvasElement, chartInstance, historicalData, chart
         chartInstance.options.scales.y.title.text = yAxisLabel;
         // Ajustar el límite máximo del eje Y dinámicamente para escala lineal
         if (yAxisType === 'linear' && data.length > 0) {
-            // Establece un máximo que sea un poco más grande que el valor más alto actual.
-            // Esto ayudará a que la curva se vea, pero se disparará rápidamente.
             chartInstance.options.scales.y.max = Math.max(...data) * 1.1;
-            // Si el valor máximo es 0 (contraseña vacía), asegura que el max sea razonable para empezar.
             if (chartInstance.options.scales.y.max === 0) chartInstance.options.scales.y.max = 1;
         } else if (yAxisType === 'logarithmic') {
-            // Para logarítmica, mantenemos un suggestedMax alto.
             chartInstance.options.scales.y.suggestedMax = 1e15;
         }
         chartInstance.update();
@@ -179,7 +178,7 @@ function createOrUpdateChart(canvasElement, chartInstance, historicalData, chart
                         grid: { display: false }
                     },
                     y: {
-                        type: yAxisType, // Dinámico: 'linear' o 'logarithmic'
+                        type: yAxisType,
                         title: {
                             display: true,
                             text: yAxisLabel,
@@ -188,8 +187,6 @@ function createOrUpdateChart(canvasElement, chartInstance, historicalData, chart
                         },
                         ticks: {
                             callback: function(value, index, values) {
-                                // Para escala lineal, solo usa formatTime.
-                                // Para logarítmica, usa la lógica específica de potencias de 10.
                                 if (yAxisType === 'logarithmic') {
                                     if (value === 0) return '0';
                                     if (value === 1) return '1 seg.';
@@ -205,9 +202,7 @@ function createOrUpdateChart(canvasElement, chartInstance, historicalData, chart
                             color: '#666'
                         },
                         grid: { color: 'rgba(0, 0, 0, 0.05)' },
-                        min: (yAxisType === 'linear' ? 0 : 0.001), // Mínimo diferente para lineal/logarítmica
-                        // suggestedMax se maneja en la lógica de actualización para lineal
-                        // y se mantiene en la creación para logarítmica.
+                        min: (yAxisType === 'linear' ? 0 : 0.001),
                         suggestedMax: (yAxisType === 'logarithmic' ? 1e15 : undefined)
                     }
                 }
@@ -228,10 +223,15 @@ function updateDecryptionAnalysis() {
     const currentPasswordLength = password.length;
     const currentCharacterSetSize = getCharacterSetSize();
 
+    // --- NUEVA LÓGICA PARA HABILITAR/DESHABILITAR CHECKBOXES ---
+    const disableCheckboxes = currentPasswordLength > 0;
+    characterCheckboxes.forEach(checkbox => {
+        checkbox.disabled = disableCheckboxes;
+    });
+    // --- FIN NUEVA LÓGICA ---
+
     // Determina si la longitud de la contraseña ha cambiado o si el set de caracteres ha cambiado
     const lengthChanged = currentPasswordLength !== previousPasswordLength;
-    // La condición para charSetChanged debe verificar si el último punto en el historial
-    // tiene un tamaño de alfabeto diferente al actual.
     const charSetChanged = historicalDataHuman.length > 0 && historicalDataHuman[historicalDataHuman.length - 1].charSetSize !== currentCharacterSetSize;
 
     if (lengthChanged || charSetChanged) {
@@ -273,17 +273,17 @@ function updateDecryptionAnalysis() {
         humanChart,
         historicalDataHuman,
         `Tiempo de Desencriptación (${attemptsPerSecondHuman} int./seg.)`,
-        `Tiempo Estimado (segundos)`, // Eje Y para Humano
-        'linear' // Escala lineal para el humano
+        `Tiempo Estimado (segundos)`,
+        'linear'
     );
 
     computerChart = createOrUpdateChart(
         document.getElementById('computerTimeChart'),
         computerChart,
         historicalDataComputer,
-        `Tiempo de Desencriptación (Computadora)`, // Título más simple para computadora
-        `Tiempo Estimado (segundos)`, // Eje Y para Computadora
-        'linear' // ¡AHORA ES LINEAL PARA LA COMPUTADORA TAMBIÉN!
+        `Tiempo de Desencriptación (Computadora)`,
+        `Tiempo Estimado (segundos)`,
+        'linear' // Ambos ejes Y en escala lineal
     );
 }
 
@@ -293,7 +293,9 @@ function updateDecryptionAnalysis() {
 passwordInput.addEventListener('input', updateDecryptionAnalysis);
 
 // Escucha cada cambio en los checkboxes de tipo de carácter.
-[chkLowercase, chkUppercase, chkNumbers, chkSymbols].forEach(checkbox => {
+// Estos listeners ahora solo reinician el historial si se cambia la selección,
+// la habilitación/deshabilitación se maneja en updateDecryptionAnalysis.
+characterCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', () => {
         // Al cambiar las opciones de caracteres, reiniciamos el historial para ambos gráficos
         historicalDataHuman = [];
@@ -306,4 +308,5 @@ passwordInput.addEventListener('input', updateDecryptionAnalysis);
 // --- Inicialización del Proyecto ---
 
 // Llama a la función de análisis al cargar la página por primera vez.
+// Esto asegura que los checkboxes estén habilitados al inicio si el campo está vacío.
 updateDecryptionAnalysis();
