@@ -1,128 +1,114 @@
+/* Estilos personalizados para el cuerpo y los contenedores */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f7f6;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Alinea los elementos en la parte superior */
-    min-height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.container {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 100%;
-    max-width: 1200px; /* Aumenta el ancho máximo para las dos gráficas */
-    box-sizing: border-box;
-}
-
-h1 {
-    color: #2c3e50;
-    margin-bottom: 20px;
-}
-
-p {
-    margin-bottom: 25px;
+    font-family: 'Inter', sans-serif; /* Fuente Inter, común en diseños modernos */
     line-height: 1.6;
-    color: #555;
+    background-color: #f0f2f5; /* Fondo gris claro */
+    color: #333;
+    padding: 20px;
+    display: flex; /* Usar flexbox para organizar los contenedores */
+    flex-direction: column; /* Apilar los contenedores verticalmente */
+    align-items: center; /* Centrar los contenedores horizontalmente */
+    min-height: 100vh; /* Altura mínima para ocupar toda la vista */
 }
-
-input[type="text"] {
-    width: calc(100% - 20px);
+.container {
+    max-width: 1200px; /* Aumentado para ocupar más espacio en el ancho */
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px; /* Esquinas más redondeadas */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra más pronunciada */
+    margin-bottom: 20px; /* Espacio entre contenedores */
+    width: 100%; /* Ocupar todo el ancho disponible dentro del max-width */
+}
+h1, h2, h3 {
+    color: #1a73e8; /* Azul de Google para títulos */
+    margin-bottom: 15px;
+    font-weight: 700; /* Negrita para títulos */
+}
+p {
+    margin-bottom: 10px;
+}
+ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+ol {
+    list-style-type: decimal;
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+.rubric-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 8px; /* Bordes redondeados para la tabla */
+    overflow: hidden; /* Asegura que los bordes redondeados se apliquen */
+}
+.rubric-table th, .rubric-table td {
+    border: 1px solid #e0e0e0; /* Bordes más suaves */
+    padding: 12px;
+    text-align: left;
+}
+.rubric-table th {
+    background-color: #e8f0fe; /* Fondo azul claro para encabezados */
+    font-weight: 600;
+    color: #1a73e8;
+}
+/* Estilos específicos para la calculadora */
+#passwordInput {
+    width: 100%;
     padding: 12px;
     margin-bottom: 20px;
     border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1.1em;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Incluir padding en el ancho */
 }
-
 .character-options {
-    margin-bottom: 25px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     gap: 15px;
+    margin-bottom: 20px;
 }
-
 .character-options label {
     display: flex;
     align-items: center;
-    cursor: pointer;
-    font-size: 1em;
+    font-size: 0.95rem;
     color: #555;
-    transition: color 0.3s ease;
+    cursor: pointer;
 }
-
-.character-options label:hover {
-    color: #3498db; /* Usamos una variable si la definimos, sino un color directo */
-}
-
 .character-options input[type="checkbox"] {
     margin-right: 8px;
-    width: 18px;
-    height: 18px;
-    accent-color: #e74c3c; /* Color del check, puedes ajustar */
+    transform: scale(1.2); /* Aumentar tamaño del checkbox */
 }
-
 #result {
-    margin-top: 20px;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0056b3;
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: #e6f7ff;
+    border-left: 5px solid #007bff;
+    border-radius: 8px;
 }
-
-#decryptionTimeHuman, #decryptionTimeComputer {
-    color: #e74c3c; /* Rojo para tiempos de humana, puedes elegir otro */
-}
-
-/* Estilos para las dos gráficas */
 .charts-wrapper {
     display: flex;
-    flex-wrap: wrap; /* Permite que se apilen en pantallas pequeñas */
-    justify-content: space-around;
-    gap: 20px; /* Espacio entre las gráficas */
+    flex-wrap: wrap; /* Permite que los gráficos se envuelvan en pantallas pequeñas */
+    gap: 20px;
+    justify-content: center;
 }
-
 .chart-container {
-    width: 48%; /* Casi la mitad, dejando un pequeño espacio */
-    max-width: 550px; /* Controla el tamaño máximo de cada gráfica */
-    /* --- CAMBIOS AQUÍ --- */
-    height: 400px; /* Altura fija para el contenedor de la gráfica */
-    display: flex; /* Usar flexbox para centrar el canvas verticalmente */
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* Alinea el título arriba y el canvas debajo */
-    /* --- FIN DE CAMBIOS --- */
-    margin: 0 auto; /* Centrar si hay solo una o en una línea */
+    flex: 1; /* Ocupar espacio disponible */
+    min-width: 300px; /* Ancho mínimo para cada gráfico */
+    max-height: 400px; /* Limitar la altura máxima de los gráficos */
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden; /* Ocultar contenido que exceda la altura máxima */
 }
-
-.chart-container h2 {
-    color: #3498db;
-    margin-bottom: 15px;
-    font-size: 1.3em;
-}
-
-canvas {
-    max-width: 100%;
-    /* --- CAMBIOS AQUÍ --- */
-    flex-grow: 1; /* Permite que el canvas ocupe el espacio restante en el contenedor */
-    height: auto; /* Permite que Chart.js gestione la altura proporcionalmente al contenedor */
-    /* --- FIN DE CAMBIOS --- */
-}
-
-@media (max-width: 900px) {
+@media (max-width: 768px) {
     .charts-wrapper {
-        flex-direction: column; /* Apila las gráficas en pantallas más pequeñas */
-        align-items: center;
-    }
-    .chart-container {
-        width: 90%; /* Ancho completo en pantallas pequeñas */
+        flex-direction: column; /* Apilar gráficos en pantallas pequeñas */
     }
 }
