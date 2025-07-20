@@ -9,11 +9,21 @@
 <body>
     <div class="container">
         <h1>Calculadora de Seguridad de Contraseñas</h1>
-        <p>Ingresa tu contraseña para estimar el tiempo de desencriptación por fuerza bruta:</p>
+        <p>Ingresa tu contraseña y selecciona los tipos de caracteres para estimar el tiempo de desencriptación por fuerza bruta:</p>
+
         <input type="text" id="passwordInput" placeholder="Escribe tu contraseña aquí">
+
+        <div class="character-options">
+            <label><input type="checkbox" id="chkLowercase" checked> Minúsculas (a-z)</label>
+            <label><input type="checkbox" id="chkUppercase" checked> Mayúsculas (A-Z)</label>
+            <label><input type="checkbox" id="chkNumbers" checked> Números (0-9)</label>
+            <label><input type="checkbox" id="chkSymbols" checked> Símbolos (!@#$...)</label>
+        </div>
+
         <div id="result">
             Tiempo estimado de desencriptación: <span id="decryptionTime">0 segundos</span>
         </div>
+
         <div class="chart-container">
             <canvas id="timeChart"></canvas>
         </div>

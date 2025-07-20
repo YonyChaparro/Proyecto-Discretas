@@ -131,3 +131,41 @@ p {
         font-size: 1.5em;
     }
 }
+
+/* ... (tu CSS existente) ... */
+
+.character-options {
+    margin-bottom: 25px;
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    justify-content: center;
+    gap: 15px; /* Espacio entre los checkboxes */
+}
+
+.character-options label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1em;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+.character-options label:hover {
+    color: var(--primary-color);
+}
+
+.character-options input[type="checkbox"] {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--secondary-color); /* Cambia el color del check */
+}
+
+/* Media query para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .character-options {
+        flex-direction: column; /* Apila los checkboxes en pantallas pequeñas */
+        align-items: flex-start;
+    }
+}
