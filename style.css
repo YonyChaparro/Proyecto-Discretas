@@ -24,6 +24,9 @@ h1, h2, h3 {
     margin-bottom: 15px;
     font-weight: 700; /* Negrita para títulos */
 }
+h3{
+    font-size: 15px;
+}
 p {
     margin-bottom: 10px;
 }

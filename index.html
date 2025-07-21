@@ -53,40 +53,30 @@
     <div class="container mx-auto bg-white p-6 rounded-xl shadow-lg">
         <h1 class="text-3xl font-bold text-blue-700 mb-4">Proyecto Final Matemáticas Discretas I</h1>
         <h2 class="text-2xl font-semibold text-blue-600 mb-6">Generador de Contraseñas Seguras y Análisis de Combinaciones</h2>
-
+        <h3 class="text-xl font-semibold text-blue-600 mb-6">Yony Sebastian Chaparro Mesa - Angel Inyena Pasuy Muchavisoy</h3>
+        
         <p class="text-gray-700 mb-4">
             Este proyecto busca aplicar los principios de las Matemáticas Discretas I, específicamente los temas de conteo, a un problema relevante en Ingeniería de Sistemas y Computación: la generación y análisis de la seguridad de contraseñas.
         </p>
 
         <h3 class="text-xl font-semibold text-blue-600 mb-3">Descripción General del Proyecto</h3>
         <p class="text-gray-700 mb-4">
-            La idea central del proyecto es desarrollar una herramienta que no solo genere contraseñas aleatorias y seguras, sino que también eduque al usuario sobre la "fuerza" de dichas contraseñas, cuantificando el número de combinaciones posibles. Esto permitirá a los estudiantes explorar la aplicación de los principios de conteo en un contexto práctico de seguridad informática. El proyecto puede ser realizado en grupos de máximo 4 personas.
-        </p>
+La idea central del proyecto es desarrollar una herramienta que evalúe las contraseñas digitadas por el usuario y muestre qué tan seguras son mediante gráficas que ilustren cuánto tiempo tardarían distintos algoritmos de desencriptación en descifrarlas.
+
+Además, se busca enseñar a los estudiantes de dónde provienen dichos cálculos y cómo los conceptos vistos en clase, como conteo, permutaciones y combinaciones, se aplican en este contexto.        </p>
 
         <h3 class="text-xl font-semibold text-blue-600 mb-3">Componentes y Funcionalidades Clave</h3>
 
         <ol class="list-decimal list-inside pl-4 mb-4">
-            <li class="mb-2">
-                <h4 class="text-lg font-medium text-blue-600">Generador de Contraseñas:</h4>
+                <h4 class="text-lg font-medium text-blue-600">Análisis de Combinaciones:</h4>
                 <ul class="list-disc list-inside pl-6 text-gray-700">
-                    <li>Permitir al usuario especificar la <strong>longitud</strong> deseada de la contraseña (e.g., entre 8 y 20 caracteres).</li>
-                    <li>Permitir al usuario seleccionar los <strong>tipos de caracteres</strong> a incluir:
-                        <ul class="list-circle list-inside pl-6">
-                            <li>Minúsculas (a-z)</li>
-                            <li>Mayúsculas (A-Z)</li>
-                            <li>Números (0-9)</li>
-                            <li>Símbolos especiales (!@#$%^&*...)</li>
-                        </ul>
-                    </li>
-                    <li>Generar una contraseña aleatoria que cumpla con los criterios seleccionados.</li>
+                    <li>Calcular el número total de combinaciones posibles para la contraseña digitada por el usuario, teniendo en cuenta los tipos de caracteres utilizados (minúsculas, mayúsculas, caracteres especiales y números).</li>
+                    <li>Estimar el tiempo que tomaría descifrar la contraseña, asumiendo un algoritmo de ataque por fuerza bruta.</li>
+                    <li>Comparar el tiempo que le tomaría a un humano y a una máquina descifrar dicha contraseña.</li>
                 </ul>
-            </li>
-            <li class="mb-2">
-                <h4 class="text-lg font-medium text-blue-600">Análisis de Combinaciones (Fuerza de la Contraseña):</h4>
+                <h4 class="text-lg font-medium text-blue-600">Análisis de Ataque (Computadora vs Humano):</h4>
                 <ul class="list-disc list-inside pl-6 text-gray-700">
-                    <li>Calcular el <strong>número total de combinaciones posibles</strong> para una contraseña de la longitud y los tipos de caracteres seleccionados. Este cálculo se basará directamente en los principios de conteo.</li>
-                    <li>Mostrar al usuario el resultado de manera comprensible (ej. "Esta contraseña tiene X combinaciones posibles").</li>
-                    <li>Opcionalmente, estimar el tiempo que tomaría "romper" la contraseña, asumiendo una tasa de intentos por segundo.</li>
+                <li>Suponiendo que un humano puede intentar una contraseña cada 0.5 segundos y que un algoritmo automatizado de fuerza bruta puede hacer entre 1 y 10 microsegundos por intento (1 µs = 0.000001 s), se puede estimar el tiempo necesario para descifrar una contraseña. Utilizando herramientas como <strong>JavaScript</strong> y la librería <strong>Chart.js</strong>, es posible visualizar interactivamente estos tiempos según la longitud de la contraseña y la cantidad de combinaciones posibles, lo cual depende de los caracteres utilizados.</li>
                 </ul>
             </li>
         </ol>
@@ -94,82 +84,58 @@
         <h3 class="text-xl font-semibold text-blue-600 mb-3">Conceptos de Matemáticas Discretas a Aplicar</h3>
         <p class="text-gray-700 mb-4">Este proyecto se fundamenta en los siguientes conceptos vistos en el curso:</p>
         <ul class="list-disc list-inside pl-4 mb-4">
-            <li class="mb-2"><strong>Principios Fundamentales de Conteo:</strong> Principalmente, el principio de la multiplicación, que establece que si hay $n_1$ formas de realizar una primera tarea y $n_2$ formas de realizar una segunda tarea, entonces hay $n_1 \times n_2$ formas de realizar ambas tareas. Para las contraseñas, cada posición es una tarea y el número de opciones es el tamaño del conjunto de caracteres disponibles.</li>
-            <li class="mb-2"><strong>Permutaciones y Combinaciones Generalizadas:</strong> La comprensión de que el orden de los caracteres en una contraseña es importante y los caracteres pueden repetirse. La fórmula clave para calcular el número de combinaciones posibles es $N^L$, donde $N$ es el número total de caracteres disponibles y $L$ es la longitud de la contraseña.</li>
+            <li class="mb-2">Principios Fundamentales de Conteo: Principalmente, el principio de la multiplicación, que establece que si hay "n" formas de realizar una primera tarea y "m" formas de realizar una segunda tarea, entonces hay "nm" formas de realizar ambas tareas. Para las contraseñas, cada caracter es uan tarea y el número de opciones es el tamaño del conjunto de caracteres disponibles.</li>
+            <li class="mb-2">Permutaciones y Combinaciones: El orden de los caracteres en una contraseña es importante y los caracteres pueden repetirse, la fórmula clave para calcular el número de combinaciones posibles es N^L, donde N es el número total de caracteres disponibles y L es la longitud de la contraseña.</li>
         </ul>
 
         <h3 class="text-xl font-semibold text-blue-600 mb-3">Ejemplo de Cálculo:</h3>
-        <p class="text-gray-700 mb-4">Si el usuario elige una longitud de 10 caracteres y desea incluir minúsculas (26), mayúsculas (26), números (10) y símbolos (aprox. 32), el número total de caracteres disponibles ($N$) sería $26+26+10+32 = 94$. La longitud ($L$) es 10.</p>
-        <p class="text-gray-700 mb-4">El número de combinaciones posibles sería $94^{10}$.</p>
+        <p class="text-gray-700 mb-4">Si el usuario elige una longitud de 10 caracteres y desea incluir minúsculas (26), mayúsculas (26), números (10) y símbolos (aprox. 32), el número total de caracteres disponibles (N) sería 26+26+10+32 = 94. La longitud L es 10.</p>
+        <p class="text-gray-700 mb-4">El número de combinaciones posibles sería 94^10.</p>
 
-        <h3 class="text-xl font-semibold text-blue-600 mb-3">Posibles Extensiones y Mejoras:</h3>
-        <ul class="list-disc list-inside pl-4 mb-4 text-gray-700">
-            <li>**Estimación del Tiempo de Cracking:** Calcular cuánto tiempo tomaría romper la contraseña, asumiendo una tasa de intentos por segundo.</li>
-            <li>**Barra de Fuerza Visual:** Una interfaz gráfica que muestre la fuerza de la contraseña en tiempo real.</li>
-            <li>**Recomendaciones de Seguridad:** Ofrecer consejos para mejorar la seguridad de la contraseña.</li>
-            <li>**Análisis de Entropía:** Introducir el concepto de entropía de Shannon para una medida más sofisticada de la fuerza.</li>
-            <li>**Integración Teórica con Hashing:** Explicar cómo las contraseñas se almacenan como hashes y su relación con la seguridad.</li>
-        </ul>
+        <h3 class="text-xl font-semibold text-blue-600 mb-3">Funcionamiento del algoritmo por Furza Bruta (en Python):</h3>
+        <pre class="bg-gray-100 p-3 rounded-lg overflow-x-auto mb-4">
+        <code class="font-mono text-sm text-blue-800">
+        import itertools
+        import string
+        import time
 
-        <h3 class="text-xl font-semibold text-blue-600 mb-3">Implementación Sugerida</h3>
-        <ul class="list-disc list-inside pl-4 mb-4 text-gray-700">
-            <li><strong>Lenguaje de Programación:</strong> Python es altamente recomendado por su facilidad para manipulación de cadenas, generación de números aleatorios y cálculos matemáticos.</li>
-            <li><strong>Interfaz de Usuario:</strong> Se puede iniciar con una interfaz de consola y, si el tiempo lo permite, evolucionar a una interfaz gráfica (GUI) utilizando librerías como Tkinter o PyQt.</li>
-        </ul>
+        def detectar_tipo(password):
+            tiene_minus = any(c.islower() for c in password)
+            tiene_mayus = any(c.isupper() for c in password)
+            tiene_num = any(c.isdigit() for c in password)
+            tiene_simbolos = any(c in string.punctuation for c in password)
 
-        <h3 class="text-xl font-semibold text-blue-600 mb-3">Fechas Importantes y Entregables</h3>
-        <p class="text-gray-700 mb-2">Las fechas de presentación de proyectos son el <strong>21 y 23 de julio de 2025</strong>.</p>
-        <p class="text-gray-700 mb-2">Para el proyecto se debe entregar:</p>
-        <ul class="list-disc list-inside pl-4 mb-4 text-gray-700">
-            <li><strong>Código fuente</strong> de la solución o desarrollo teórico.</li>
-            <li><strong>Video de máximo 6 minutos</strong> donde se muestre:
-                <ul class="list-circle list-inside pl-6">
-                    <li>Ejecución de la aplicación/Teoría.</li>
-                    <li>Detalles principales de diseño/Teoría.</li>
-                    <li>Referencias de la aplicación existente (si aplica).</li>
-                </ul>
-            </li>
-        </ul>
-        <p class="text-gray-700 mb-4">La reproducción de los videos se realizará en la última semana de clase en el horario de clase. Al finalizar cada video, se tendrá una sección de preguntas de 9 minutos por parte de los estudiantes y del profesor.</p>
+            alfabeto = ''
+            if tiene_num:
+                alfabeto += string.digits 
+            if tiene_minus:
+                alfabeto += string.ascii_lowercase  
+            if tiene_mayus:
+                alfabeto += string.ascii_uppercase  
+            if tiene_simbolos:
+                alfabeto += string.punctuation  
+            return alfabeto
 
-        <h3 class="text-xl font-semibold text-blue-600 mb-3">Rúbrica de Evaluación</h3>
-        <p class="text-gray-700 mb-2">La evaluación del proyecto se realizará de acuerdo con la siguiente rúbrica:</p>
-        <table class="rubric-table w-full border border-gray-300 rounded-lg overflow-hidden">
-            <thead>
-                <tr>
-                    <th class="bg-blue-100 text-blue-700 font-semibold p-3">Ítem</th>
-                    <th class="bg-blue-100 text-blue-700 font-semibold p-3">Porcentaje</th>
-                    <th class="bg-blue-100 text-blue-700 font-semibold p-3">Explicación Ítem</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="p-3 border-t border-gray-200">Video</td>
-                    <td class="p-3 border-t border-gray-200">40%</td>
-                    <td class="p-3 border-t border-gray-200">El video explica bien la solución y muestra dominio sobre el desarrollo realizado.</td>
-                </tr>
-                <tr>
-                    <td class="p-3 border-t border-gray-200">Preguntas</td>
-                    <td class="p-3 border-t border-gray-200">40%</td>
-                    <td class="p-3 border-t border-gray-200">Se muestra dominio del tema y se responden adecuadamente las preguntas.</td>
-                </tr>
-                <tr>
-                    <td class="p-3 border-t border-gray-200">Referencias</td>
-                    <td class="p-3 border-t border-gray-200">20%</td>
-                    <td class="p-3 border-t border-gray-200">Se referencia adecuadamente en el video y en el código los recursos utilizados.</td>
-                </tr>
-                <tr>
-                    <td class="p-3 border-t border-gray-200 font-bold">Total</td>
-                    <td class="p-3 border-t border-gray-200 font-bold">100%</td>
-                    <td class="p-3 border-t border-gray-200"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        def fuerza_bruta_adaptativa(password_objetivo):
+            alfabeto = detectar_tipo(password_objetivo)
+            print(f"Alfabeto usado: {alfabeto}")
+            
+            intentos = 0
+            start = time.time()
 
-    <!-- Carga de Chart.js para los gráficos -->
+            for longitud in range(1, len(password_objetivo) + 1):
+                for intento in itertools.product(alfabeto, repeat=longitud):
+                    intento_actual = ''.join(intento)
+                    intentos += 1
+                    if intento_actual == password_objetivo:
+                        end = time.time()
+                        print(f"Contraseña encontrada: {intento_actual}")
+                        print(f"Tiempo: {end - start:.4f} s")
+                        return
+        </code>
+        </pre>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Enlace al archivo JavaScript externo -->
     <script src="script.js"></script>
 </body>
 </html>
