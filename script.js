@@ -134,7 +134,6 @@ function createOrUpdateChart(canvasElement, chartInstance, historicalData, chart
         chartInstance.data.labels = labels;
         chartInstance.data.datasets[0].data = data;
         chartInstance.options.scales.y.title.text = yAxisLabel;
-        // Ajustar el límite máximo del eje Y dinámicamente para escala lineal
         if (yAxisType === 'linear' && data.length > 0) {
             chartInstance.options.scales.y.max = Math.max(...data) * 1.1;
             if (chartInstance.options.scales.y.max === 0) chartInstance.options.scales.y.max = 1;
@@ -245,10 +244,8 @@ function createOrUpdateChart(canvasElement, chartInstance, historicalData, chart
 function updateDecryptionAnalysis() {
     // Obtener la cadena de caracteres permitidos basada en la selección actual
     const permittedCharacterSet = getPermittedCharacterSet();
-
     let password = passwordInput.value;
     let newPassword = '';
-
     // --- NUEVA LÓGICA DE VALIDACIÓN DE CARACTERES ---
     // Recorre la contraseña ingresada, caracter por caracter
     for (let i = 0; i < password.length; i++) {

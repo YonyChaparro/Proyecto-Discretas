@@ -120,13 +120,11 @@ Además, se busca enseñar a los estudiantes de dónde provienen dichos cálculo
             alfabeto = detectar_tipo(password_objetivo)
             print(f"Alfabeto usado: {alfabeto}")
             
-            intentos = 0
             start = time.time()
 
             for longitud in range(1, len(password_objetivo) + 1):
                 for intento in itertools.product(alfabeto, repeat=longitud):
                     intento_actual = ''.join(intento)
-                    intentos += 1
                     if intento_actual == password_objetivo:
                         end = time.time()
                         print(f"Contraseña encontrada: {intento_actual}")
@@ -134,7 +132,6 @@ Además, se busca enseñar a los estudiantes de dónde provienen dichos cálculo
                         return
         </code>
         </pre>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
