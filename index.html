@@ -81,8 +81,8 @@
             <li>
                 <p><b>Determinación de n (Tamaño del Alfabeto):</b></p>
                 <p>La función <code>getCharacterSetSize()</code> es la encargada de calcular <code>currentCharacterSetSize</code>. Esta función suma las longitudes de los alfabetos individuales (minúsculas, mayúsculas, números, símbolos) que el usuario ha seleccionado.</p>
-                <p>Por ejemplo, si el usuario selecciona minúsculas (26 caracteres) y números (10 caracteres), entonces <code>currentCharacterSetSize</code> sería:</p>
-                <p>$$n = \text{longitud(minusculas)} + \text{longitud(numeros)} = 26 + 10 = 36$$</p>
+                <p>Por ejemplo, si el usuario selecciona minúsculas (27 caracteres) y números (10 caracteres), entonces <code>currentCharacterSetSize</code> sería:</p>
+                <p>$$n = \text{longitud(minusculas)} + \text{longitud(numeros)} = 27 + 10 = 37$$</p>
             </li>
             <li>
                 <p><b>Determinación de k (Longitud de la Contraseña):</b></p>
@@ -96,8 +96,8 @@
                 <p>$$\text{numberOfCombinations} = \text{currentCharacterSetSize}^{\text{passwordLength}}$$</p>
                 <p>Es decir:</p>
                 <p>$$\text{Numero total de contrasenas posibles} = n^k$$</p>
-                <p>Por ejemplo, si $n = 36$ (minúsculas + números) y $k = 5$ (longitud de la contraseña es 5), el número total de combinaciones posibles que un atacante tendría que probar sería:</p>
-                <p>$$36^5 = 60,466,176$$</p>
+                <p>Por ejemplo, si n = 37 (minúsculas + números) y k = 5 (longitud de la contraseña es 5), el número total de combinaciones posibles que un atacante tendría que probar sería:</p>
+                <p>$$37^5 = 69,343,957$$</p>
                 <p>Este valor (<code>numberOfCombinations</code>) representa el <b>espacio de búsqueda</b> que un atacante de fuerza bruta debe explorar.</p>
             </li>
             <li>
