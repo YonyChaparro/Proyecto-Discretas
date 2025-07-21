@@ -4,134 +4,136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proyecto Final: Seguridad de Contraseñas</title>
-    <!-- Carga de Tailwind CSS para estilos modernos y responsivos -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Incluye MathJax para renderizar ecuaciones LaTeX, es crucial para las fórmulas del informe -->
+    <script type="text/javascript" id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
     <!-- Enlace al archivo CSS externo -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-100 p-4 sm:p-6 md:p-8">
+<body>
     <!-- Contenedor de la calculadora de seguridad de contraseñas (PRIMERO) -->
-    <div class="container mx-auto bg-white p-6 rounded-xl shadow-lg mb-8">
-        <h1 class="text-3xl font-bold text-blue-700 mb-4">Calculadora de Seguridad de Contraseñas</h1>
-        <p class="text-gray-700 mb-6">Ingresa tu contraseña y selecciona los tipos de caracteres para estimar el tiempo de desencriptación por fuerza bruta:</p>
+    <div class="container">
+        <h1>Calculadora de Seguridad de Contraseñas</h1>
+        <p>Ingresa tu contraseña y selecciona los tipos de caracteres para estimar el tiempo de desencriptación por fuerza bruta:</p>
 
-        <input type="text" id="passwordInput" placeholder="Escribe tu contraseña aquí" class="w-full p-3 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <input type="text" id="passwordInput" placeholder="Escribe tu contraseña aquí">
 
-        <div class="character-options flex flex-wrap gap-4 mb-6">
-            <label class="flex items-center text-gray-700 cursor-pointer">
-                <input type="checkbox" id="chkLowercase" class="mr-2 h-5 w-5 text-blue-600 rounded focus:ring-blue-500" checked> Minúsculas (a-z)
+        <div class="character-options">
+            <label>
+                <input type="checkbox" id="chkLowercase" checked> Minúsculas (a-z)
             </label>
-            <label class="flex items-center text-gray-700 cursor-pointer">
-                <input type="checkbox" id="chkUppercase" class="mr-2 h-5 w-5 text-blue-600 rounded focus:ring-blue-500" checked> Mayúsculas (A-Z)
+            <label>
+                <input type="checkbox" id="chkUppercase" checked> Mayúsculas (A-Z)
             </label>
-            <label class="flex items-center text-gray-700 cursor-pointer">
-                <input type="checkbox" id="chkNumbers" class="mr-2 h-5 w-5 text-blue-600 rounded focus:ring-blue-500" checked> Números (0-9)
+            <label>
+                <input type="checkbox" id="chkNumbers" checked> Números (0-9)
             </label>
-            <label class="flex items-center text-gray-700 cursor-pointer">
-                <input type="checkbox" id="chkSymbols" class="mr-2 h-5 w-5 text-blue-600 rounded focus:ring-blue-500" checked> Símbolos (!@#$...)
+            <label>
+                <input type="checkbox" id="chkSymbols" checked> Símbolos (!@#$...)
             </label>
         </div>
 
-        <div id="result" class="text-lg font-semibold text-blue-700 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-6">
+        <div id="result">
             Tiempo estimado de desencriptación: <span id="decryptionTimeHuman">0 segundos</span> (Humano) |
             <span id="decryptionTimeComputer">0 segundos</span> (Computadora)
         </div>
 
-        <div class="charts-wrapper flex flex-wrap justify-center gap-6">
-            <div class="chart-container flex-1 min-w-[300px] bg-gray-50 p-5 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold text-blue-600 mb-4 text-center">Ataque Humano</h2>
+        <div class="charts-wrapper">
+            <div class="chart-container">
+                <h2>Ataque Humano</h2>
                 <canvas id="humanTimeChart"></canvas>
             </div>
-            <div class="chart-container flex-1 min-w-[300px] bg-gray-50 p-5 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold text-blue-600 mb-4 text-center">Ataque de Computadora</h2>
+            <div class="chart-container">
+                <h2>Ataque de Computadora</h2>
                 <canvas id="computerTimeChart"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Contenedor principal del informe del proyecto (SEGUNDO) -->
-    <div class="container mx-auto bg-white p-6 rounded-xl shadow-lg">
-        <h1 class="text-3xl font-bold text-blue-700 mb-4">Proyecto Final Matemáticas Discretas I</h1>
-        <h2 class="text-2xl font-semibold text-blue-600 mb-6">Generador de Contraseñas Seguras y Análisis de Combinaciones</h2>
-        <h3 class="text-xl font-semibold text-blue-600 mb-6">Yony Sebastian Chaparro Mesa - Angel Inyena Pasuy Muchavisoy</h3>
-        
-        <p class="text-gray-700 mb-4">
-            Este proyecto busca aplicar los principios de las Matemáticas Discretas I, específicamente los temas de conteo, a un problema relevante en Ingeniería de Sistemas y Computación: la generación y análisis de la seguridad de contraseñas.
-        </p>
+    <!-- Contenedor principal del informe del proyecto -->
+    <div class="container">
+        <h1>Análisis de Contraseñas: Conteo, Permutaciones y Combinaciones en el Código</h1>
+        <p>El código JavaScript que analizamos simula el tiempo que tardaría un atacante (humano o computadora) en descifrar una contraseña mediante un ataque de <b>fuerza bruta</b>. Para ello, se basa fundamentalmente en el <b>Principio Multiplicativo del Conteo</b>.</p>
 
-        <h3 class="text-xl font-semibold text-blue-600 mb-3">Descripción General del Proyecto</h3>
-        <p class="text-gray-700 mb-4">
-La idea central del proyecto es desarrollar una herramienta que evalúe las contraseñas digitadas por el usuario y muestre qué tan seguras son mediante gráficas que ilustren cuánto tiempo tardarían distintos algoritmos de desencriptación en descifrarlas.
+        <p>A continuación, se detalla cómo se aplican estos temas:</p>
 
-Además, se busca enseñar a los estudiantes de dónde provienen dichos cálculos y cómo los conceptos vistos en clase, como conteo, permutaciones y combinaciones, se aplican en este contexto.        </p>
+        <h2>1. Conteo (Principio Multiplicativo)</h2>
+        <p>Este es el concepto <b>principal</b> que se aplica en la función <code>calculateDecryptionTime</code>. El código calcula el número total de combinaciones posibles para una contraseña de una longitud dada y un conjunto de caracteres disponible. Esto se hace multiplicando el tamaño del conjunto de caracteres por sí mismo tantas veces como la longitud de la contraseña.</p>
 
-        <h3 class="text-xl font-semibold text-blue-600 mb-3">Componentes y Funcionalidades Clave</h3>
+        <div>
+            <h3>Fórmula Aplicada: Variaciones con Repetición</h3>
+            <p>El código calcula el número de <b>variaciones con repetición</b> posibles. La fórmula es:</p>
+            <p>$$V_{n}^{k} (\text{con repeticion}) = n^k$$</p>
+            <p>Donde:</p>
+            <ul>
+                <li>n: Es el tamaño del alfabeto o el número de caracteres distintos disponibles para elegir. En nuestro código, esto corresponde a <code>currentCharacterSetSize</code>.</li>
+                <li>k: Es la longitud de la secuencia o la contraseña. En nuestro código, esto corresponde a <code>passwordLength</code>.</li>
+            </ul>
+        </div>
 
-        <ol class="list-decimal list-inside pl-4 mb-4">
-                <h4 class="text-lg font-medium text-blue-600">Análisis de Combinaciones:</h4>
-                <ul class="list-disc list-inside pl-6 text-gray-700">
-                    <li>Calcular el número total de combinaciones posibles para la contraseña digitada por el usuario, teniendo en cuenta los tipos de caracteres utilizados (minúsculas, mayúsculas, caracteres especiales y números).</li>
-                    <li>Estimar el tiempo que tomaría descifrar la contraseña, asumiendo un algoritmo de ataque por fuerza bruta.</li>
-                    <li>Comparar el tiempo que le tomaría a un humano y a una máquina descifrar dicha contraseña.</li>
-                </ul>
-                <h4 class="text-lg font-medium text-blue-600">Análisis de Ataque (Computadora vs Humano):</h4>
-                <ul class="list-disc list-inside pl-6 text-gray-700">
-                <li>Suponiendo que un humano puede intentar una contraseña cada 0.5 segundos y que un algoritmo automatizado de fuerza bruta puede hacer entre 1 y 10 microsegundos por intento (1 µs = 0.000001 s), se puede estimar el tiempo necesario para descifrar una contraseña. Utilizando herramientas como <strong>JavaScript</strong> y la librería <strong>Chart.js</strong>, es posible visualizar interactivamente estos tiempos según la longitud de la contraseña y la cantidad de combinaciones posibles, lo cual depende de los caracteres utilizados.</li>
-                </ul>
+        <h3>Aplicación en el Código:</h3>
+        <ul>
+            <li>
+                <p><b>Determinación de n (Tamaño del Alfabeto):</b></p>
+                <p>La función <code>getCharacterSetSize()</code> es la encargada de calcular <code>currentCharacterSetSize</code>. Esta función suma las longitudes de los alfabetos individuales (minúsculas, mayúsculas, números, símbolos) que el usuario ha seleccionado.</p>
+                <p>Por ejemplo, si el usuario selecciona minúsculas (26 caracteres) y números (10 caracteres), entonces <code>currentCharacterSetSize</code> sería:</p>
+                <p>$$n = \text{longitud(minusculas)} + \text{longitud(numeros)} = 26 + 10 = 36$$</p>
             </li>
-        </ol>
-
-        <h3 class="text-xl font-semibold text-blue-600 mb-3">Conceptos de Matemáticas Discretas a Aplicar</h3>
-        <p class="text-gray-700 mb-4">Este proyecto se fundamenta en los siguientes conceptos vistos en el curso:</p>
-        <ul class="list-disc list-inside pl-4 mb-4">
-            <li class="mb-2">Principios Fundamentales de Conteo: Principalmente, el principio de la multiplicación, que establece que si hay "n" formas de realizar una primera tarea y "m" formas de realizar una segunda tarea, entonces hay "nm" formas de realizar ambas tareas. Para las contraseñas, cada caracter es uan tarea y el número de opciones es el tamaño del conjunto de caracteres disponibles.</li>
-            <li class="mb-2">Permutaciones y Combinaciones: El orden de los caracteres en una contraseña es importante y los caracteres pueden repetirse, la fórmula clave para calcular el número de combinaciones posibles es N^L, donde N es el número total de caracteres disponibles y L es la longitud de la contraseña.</li>
+            <li>
+                <p><b>Determinación de k (Longitud de la Contraseña):</b></p>
+                <p>Esto se obtiene directamente de la longitud de la contraseña ingresada por el usuario: <code>password.length</code>, que en la función <code>calculateDecryptionTime</code> se pasa como <code>passwordLength</code>.</p>
+            </li>
+            <li>
+                <p><b>Cálculo del Número Total de Combinaciones Posibles:</b></p>
+                <p>La línea clave en la función <code>calculateDecryptionTime</code> es:</p>
+                <pre><code>const numberOfCombinations = Math.pow(currentCharacterSetSize, passwordLength);</code></pre>
+                <p>Traducido a nuestra fórmula:</p>
+                <p>$$\text{numberOfCombinations} = \text{currentCharacterSetSize}^{\text{passwordLength}}$$</p>
+                <p>Es decir:</p>
+                <p>$$\text{Numero total de contrasenas posibles} = n^k$$</p>
+                <p>Por ejemplo, si $n = 36$ (minúsculas + números) y $k = 5$ (longitud de la contraseña es 5), el número total de combinaciones posibles que un atacante tendría que probar sería:</p>
+                <p>$$36^5 = 60,466,176$$</p>
+                <p>Este valor (<code>numberOfCombinations</code>) representa el <b>espacio de búsqueda</b> que un atacante de fuerza bruta debe explorar.</p>
+            </li>
+            <li>
+                <p><b>Cálculo del Tiempo de Desencriptación:</b></p>
+                <p>Una vez que se tiene el <code>numberOfCombinations</code>, el tiempo estimado de desencriptación se calcula dividiendo este número por la velocidad de intentos por segundo del atacante (<code>attemptsPerSec</code>).</p>
+                <p>$$\text{Tiempo en segundos} = \frac{\text{Numero total de combinaciones posibles}}{\text{Intentos por segundo}}$$</p>
+                <p>En el código:</p>
+                <pre><code>const timeInSeconds = numberOfCombinations / attemptsPerSec;</code></pre>
+                <p>Esto se aplica tanto para el atacante humano (<code>attemptsPerSecondHuman = 0.5</code>) como para el atacante de computadora (<code>attemptsPerSecondComputer = 1,000,000,000</code>).</p>
+            </li>
         </ul>
 
-        <h3 class="text-xl font-semibold text-blue-600 mb-3">Ejemplo de Cálculo:</h3>
-        <p class="text-gray-700 mb-4">Si el usuario elige una longitud de 10 caracteres y desea incluir minúsculas (26), mayúsculas (26), números (10) y símbolos (aprox. 32), el número total de caracteres disponibles (N) sería 26+26+10+32 = 94. La longitud L es 10.</p>
-        <p class="text-gray-700 mb-4">El número de combinaciones posibles sería 94^10.</p>
+        <h2>2. Permutaciones</h2>
+        <p>Las permutaciones se refieren al número de maneras de organizar un conjunto de elementos <b>cuando el orden importa</b> y <b>sin repetición</b> (o con repetición limitada, dependiendo del tipo de permutación).</p>
+        <ul>
+            <li>
+                <p><b>¿Cómo NO se aplica directamente?</b> El código <b>no</b> calcula permutaciones en el sentido estricto de organizar un número fijo de elementos sin repetirlos. Por ejemplo, si tuviéramos que formar una contraseña de 3 caracteres usando 'a', 'b', 'c' <b>sin repetir</b> caracteres (como 'abc', 'acb', 'bac', etc.), eso sería una permutación.</p>
+            </li>
+            <li>
+                <p><b>¿Por qué no es una permutación simple?</b> Porque en la creación de contraseñas, los caracteres <b>sí</b> se pueden repetir (por ejemplo, "aaa", "111") y no se trata de organizar un conjunto predefinido de caracteres únicos, sino de elegir caracteres de un conjunto más grande para cada posición.</p>
+            </li>
+        </ul>
 
-        <h3 class="text-xl font-semibold text-blue-600 mb-3">Funcionamiento del algoritmo por Furza Bruta (en Python):</h3>
-        <pre class="bg-gray-100 p-3 rounded-lg overflow-x-auto mb-4">
-        <code class="font-mono text-sm text-blue-800">
-        import itertools
-        import string
-        import time
+        <h2>3. Combinaciones</h2>
+        <p>Las combinaciones se refieren al número de maneras de elegir un subconjunto de elementos de un conjunto más grande <b>donde el orden NO importa</b>.</p>
+        <ul>
+            <li>
+                <p><b>¿Cómo NO se aplica?</b> El código <b>no</b> calcula combinaciones. Por ejemplo, si quisiéramos saber cuántas formas hay de elegir 3 caracteres diferentes de un conjunto de 10 sin que importe el orden de elección, eso sería una combinación.</p>
+            </li>
+            <li>
+                <p><b>¿Por qué no es una combinación?</b> En una contraseña, el orden de los caracteres es <b>crucial</b>. "abc" es diferente de "cba". Si fuera una combinación, "abc" y "cba" se considerarían la misma "contraseña", lo cual no es correcto para el propósito de este simulador.</p>
+            </li>
+        </ul>
 
-        def detectar_tipo(password):
-            tiene_minus = any(c.islower() for c in password)
-            tiene_mayus = any(c.isupper() for c in password)
-            tiene_num = any(c.isdigit() for c in password)
-            tiene_simbolos = any(c in string.punctuation for c in password)
+        <h2>Resumen de la Aplicación en el Código</h2>
+        <p>En esencia, el código está calculando el <b>número de variaciones con repetición</b> posibles para una contraseña. Esto se alinea directamente con el <b>Principio Multiplicativo del Conteo</b>. Para cada posición en la contraseña, hay <code>currentCharacterSetSize</code> opciones independientes. Por lo tanto, para una contraseña de <code>passwordLength</code> posiciones, el número total de posibilidades es <code>currentCharacterSetSize</code> elevado a la potencia de <code>passwordLength</code>.</p>
+        <p>El propósito del script es demostrar la seguridad de una contraseña en función de su longitud y la complejidad del conjunto de caracteres utilizados, cuantificando el número de intentos que un atacante necesitaría realizar en un escenario de fuerza bruta.</p>
+    </div>
 
-            alfabeto = ''
-            if tiene_num:
-                alfabeto += string.digits 
-            if tiene_minus:
-                alfabeto += string.ascii_lowercase  
-            if tiene_mayus:
-                alfabeto += string.ascii_uppercase  
-            if tiene_simbolos:
-                alfabeto += string.punctuation  
-            return alfabeto
 
-        def fuerza_bruta_adaptativa(password_objetivo):
-            alfabeto = detectar_tipo(password_objetivo)
-            print(f"Alfabeto usado: {alfabeto}")
-            
-            start = time.time()
-
-            for longitud in range(1, len(password_objetivo) + 1):
-                for intento in itertools.product(alfabeto, repeat=longitud):
-                    intento_actual = ''.join(intento)
-                    if intento_actual == password_objetivo:
-                        end = time.time()
-                        print(f"Contraseña encontrada: {intento_actual}")
-                        print(f"Tiempo: {end - start:.4f} s")
-                        return
-        </code>
-        </pre>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>

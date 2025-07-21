@@ -21,7 +21,6 @@ const ALPHABETS = {
     lowercase: 'abcdefghijklmnopqrstuvwxyz',
     uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
     numbers: '0123456789',
-    // Símbolos comunes (puedes expandir o reducir según tu criterio)
     symbols: '!@#$%^&*()-_+=[]{}|;:,.<>?/~`"\'\\'
 };
 
