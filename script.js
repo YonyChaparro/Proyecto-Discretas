@@ -14,6 +14,11 @@ const chkSymbols = document.getElementById('chkSymbols');
 // Agrupar los checkboxes para facilitar su manejo
 const characterCheckboxes = [chkLowercase, chkUppercase, chkNumbers, chkSymbols];
 
+// --- NUEVAS REFERENCIAS PARA MOSTRAR n, k, y Combinaciones ---
+const alphabetSizeSpan = document.getElementById('alphabetSize');
+const passwordLengthSpan = document.getElementById('passwordLength');
+const totalCombinationsSpan = document.getElementById('totalCombinations');
+
 // --- Configuración Global de la Simulación ---
 
 // Definición de los tamaños y JUEGOS de los alfabetos individuales
@@ -38,7 +43,7 @@ const attemptsPerSecondHuman = 0.5; // 1 intento cada 2 segundos
 const attemptsPerSecondComputer = 1_000_000_000; // 1 billón (10^9) de intentos por segundo
 
 // --- Variables para los Gráficos y el Historial ---
-let humanChart;    // Instancia del gráfico para ataque humano
+let humanChart;     // Instancia del gráfico para ataque humano
 let computerChart; // Instancia del gráfico para ataque de computadora
 
 // Almacena los puntos históricos para cada gráfico
@@ -261,6 +266,9 @@ function updateDecryptionAnalysis() {
 
     const currentPasswordLength = password.length;
     const currentCharacterSetSize = getCharacterSetSize();
+    // Calculate total combinations (n^k)
+    const totalCombinations = Math.pow(currentCharacterSetSize, currentPasswordLength);
+
 
     // Lógica para habilitar/deshabilitar checkboxes
     const disableCheckboxes = currentPasswordLength > 0;
@@ -307,8 +315,14 @@ function updateDecryptionAnalysis() {
     const currentTimeHuman = calculateDecryptionTime(currentPasswordLength, currentCharacterSetSize, attemptsPerSecondHuman);
     const currentTimeComputer = calculateDecryptionTime(currentPasswordLength, currentCharacterSetSize, attemptsPerSecondComputer);
     
-    decryptionTimeHumanSpan.textContent = `${formatTime(currentTimeHuman)} (Humano)`;
-    decryptionTimeComputerSpan.textContent = `${formatTime(currentTimeComputer)} (Computadora)`;
+    // --- CAMBIO AQUÍ: Eliminar la redundancia de "(Humano)" y "(Computadora)" ---
+    decryptionTimeHumanSpan.textContent = formatTime(currentTimeHuman);
+    decryptionTimeComputerSpan.textContent = formatTime(currentTimeComputer);
+
+    // Actualizar los spans de n, k, y Combinaciones
+    alphabetSizeSpan.textContent = currentCharacterSetSize;
+    passwordLengthSpan.textContent = currentPasswordLength;
+    totalCombinationsSpan.textContent = totalCombinations.toLocaleString('en-US', {useGrouping: true, maximumFractionDigits: 0}); // Formatear para legibilidad
 
     // Renderiza (o actualiza) ambos gráficos
     humanChart = createOrUpdateChart(
